@@ -1,6 +1,8 @@
 #!groovy
 stage 'build'
-    docker.image("codetroopers/jenkins-slave-jdk8-restx").inside('-v /var/jenkins_home/.m2:/home/jenkins/.m2'){
+    def m2Repo = '-v /var/jenkins_home/.m2:/home/jenkins/.m2'
+    def timezone = '-e TZ=Europe/Paris'
+    docker.image("codetroopers/jenkins-slave-jdk8-restx").inside("${m2Repo} ${timezone}"){
         checkout scm
         sh "MAVEN_OPTS=-Dfile.encoding=UTF-8 mvn clean install -B"
         step([$class: 'ArtifactArchiver', artifacts: 'srv/target/dependency/webapp-runner.jar, srv/target/*.war, run.sh, Dockerfile'])
